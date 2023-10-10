@@ -1,0 +1,21 @@
+{
+  "name": "custom-article-importer",
+  "version": "1.0.0",
+  "description": "Description of your plugin",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch"
+  },
+  "author": "Serhii Vasyliev",
+  "license": "MIT",
+  "devDependencies": {
+    "css-loader": "^6.8.1",
+    "mini-css-extract-plugin": "^2.7.6",
+    "node-sass": "^7.0.3",
+    "sass-loader": "^12.6.0",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^4.10.0"
+  }
+}

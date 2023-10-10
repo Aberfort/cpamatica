@@ -1,0 +1,12 @@
+{
+  "name": "cpamatica/custom-article-importer",
+  "type": "wordpress-plugin",
+  "require": {
+    "composer/installers": "^1.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "CustomArticleImporter\\": "includes/"
+    }
+  }
+}
