@@ -7,6 +7,15 @@ namespace Composer\Autoload;
 class ComposerStaticInite752eee858c9951a7e264ce4cc6bb3bf
 {
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'SlevomatCodingStandard\\' => 23,
+        ),
+        'P' => 
+        array (
+            'PHPStan\\PhpDocParser\\' => 21,
+            'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 57,
+        ),
         'C' => 
         array (
             'CustomArticleImporter\\' => 22,
@@ -15,6 +24,18 @@ class ComposerStaticInite752eee858c9951a7e264ce4cc6bb3bf
     );
 
     public static $prefixDirsPsr4 = array (
+        'SlevomatCodingStandard\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/slevomat/coding-standard/SlevomatCodingStandard',
+        ),
+        'PHPStan\\PhpDocParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
+        ),
+        'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dealerdirect/phpcodesniffer-composer-installer/src',
+        ),
         'CustomArticleImporter\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',

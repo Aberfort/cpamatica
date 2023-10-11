@@ -1,6 +1,10 @@
 <?php
-/** @var $title */
-/** @var $query */
+/**
+ * @var $title 
+ */
+/**
+ * @var $query 
+ */
 ?>
 <div class="custom-article">
   <h2 class="custom-article__title"><?php echo esc_html($title); ?></h2>
@@ -8,7 +12,7 @@
       <?php while ($query->have_posts()) :
             $query->the_post();
 
-          // Get additional data
+            // Get additional data
             $article_site_link = get_post_meta(get_the_ID(), 'article_site_link', true);
             $article_rating    = get_post_meta(get_the_ID(), 'article_rating', true);
             $post_categories   = get_the_category();

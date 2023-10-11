@@ -13,57 +13,61 @@ class ImporterFunctions
 
         if (is_wp_error($response)) {
             error_log('API request error: ' . $response->get_error_message());
-
             return;
         }
 
         $data = json_decode(wp_remote_retrieve_body($response));
 
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             error_log('Invalid API response');
-
             return;
         }
 
+        // Set author as the first user with the 'administrator' role
+        $admin_user_id = $this->getFirstAdministratorUserId();
+
         foreach ($data as $article) {
-            $this->processArticle($article);
+            $post_title = $article->title;
+            $post_content = $article->content;
+            $category_name = $article->category;
+            $image_url = $article->image;
+
+            $site_link = $article->site_link ?? '';
+            $rating = $article->rating ?? '';
+
+            $post_id = $this->findOrCreatePost($post_title, $post_content);
+
+            $category_id = $this->getOrCreateCategory($category_name);
+            wp_set_post_categories($post_id, [$category_id]);
+
+            $this->uploadAndSetFeaturedImage($post_id, $image_url);
+
+            $random_date = $this->generateRandomDate();
+
+            // Update post details including date and author
+            $post_data = [
+                'ID' => $post_id,
+                'post_date' => $random_date,
+            ];
+
+            if ($admin_user_id) {
+                $post_data['post_author'] = $admin_user_id;
+            }
+
+            wp_update_post($post_data);
+
+            update_post_meta($post_id, 'article_site_link', $site_link);
+            update_post_meta($post_id, 'article_rating', $rating);
         }
     }
 
     private function makeApiRequest($url, $api_key): \WP_Error|array
     {
-        $headers = array(
+        $headers = [
             'X-API-Key' => $api_key,
-        );
+        ];
 
-        return wp_safe_remote_get($url, array( 'headers' => $headers ));
-    }
-
-    private function processArticle($article): void
-    {
-        $post_title    = $article->title;
-        $post_content  = $article->content;
-        $category_name = $article->category;
-        $image_url     = $article->image;
-
-        $site_link = $article->site_link ?? '';
-        $rating    = $article->rating ?? '';
-
-        $post_id = $this->findOrCreatePost($post_title, $post_content);
-
-        $category_id = $this->getOrCreateCategory($category_name);
-        wp_set_post_categories($post_id, array( $category_id ));
-
-        $this->uploadAndSetFeaturedImage($post_id, $image_url);
-
-        $random_date = $this->generateRandomDate();
-        wp_update_post(array(
-            'ID'        => $post_id,
-            'post_date' => $random_date,
-        ));
-
-        update_post_meta($post_id, 'article_site_link', $site_link);
-        update_post_meta($post_id, 'article_rating', $rating);
+        return wp_safe_remote_get($url, ['headers' => $headers]);
     }
 
     private function findOrCreatePost($post_title, $post_content): \WP_Error|int
@@ -73,18 +77,20 @@ class ImporterFunctions
         if ($existing_post) {
             $post_id = $existing_post->ID;
             if ($post_content !== $existing_post->post_content) {
-                wp_update_post(array(
-                    'ID'           => $post_id,
+                wp_update_post(
+                    [
+                    'ID' => $post_id,
                     'post_content' => $post_content,
-                ));
+                    ]
+                );
             }
         } else {
-            $post_data = array(
-                'post_title'   => $post_title,
+            $post_data = [
+                'post_title' => $post_title,
                 'post_content' => $post_content,
-                'post_status'  => 'publish',
-            );
-            $post_id   = wp_insert_post($post_data);
+                'post_status' => 'publish',
+            ];
+            $post_id = wp_insert_post($post_data);
         }
 
         return $post_id;
@@ -120,7 +126,7 @@ class ImporterFunctions
     {
         $image_id = $this->getAttachmentIdByUrl($image_url);
 
-        if (! $image_id) {
+        if (!$image_id) {
             $image_id = media_sideload_image($image_url, 0, '', 'id');
         }
 
@@ -130,19 +136,32 @@ class ImporterFunctions
     private function getAttachmentIdByUrl($image_url)
     {
         global $wpdb;
-        $attachment = $wpdb->get_col($wpdb->prepare(
-            "SELECT ID FROM $wpdb->posts WHERE guid='%s';",
-            $image_url
-        ));
+        $attachment = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT ID FROM $wpdb->posts WHERE guid='%s';",
+                $image_url
+            )
+        );
 
         return empty($attachment) ? 0 : $attachment[0];
     }
 
     private function generateRandomDate(): string
     {
-        $current_time     = current_time('timestamp');
+        $current_time = current_time('timestamp');
         $random_timestamp = mt_rand($current_time - 30 * 24 * 60 * 60, $current_time);
 
         return date('Y-m-d H:i:s', $random_timestamp);
+    }
+
+    private function getFirstAdministratorUserId()
+    {
+        $admin_users = get_users(['role' => 'administrator']);
+
+        if (!empty($admin_users)) {
+            return $admin_users[0]->ID;
+        }
+
+        return 0;
     }
 }
