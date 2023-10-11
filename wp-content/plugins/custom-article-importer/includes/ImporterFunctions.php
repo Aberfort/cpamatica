@@ -1,9 +1,11 @@
 <?php
-
 namespace CustomArticleImporter;
 
 class ImporterFunctions
 {
+    /**
+     * Import articles from the API.
+     */
     public function importArticles(): void
     {
         $api_url = 'https://my.api.mockaroo.com/posts.json';
@@ -18,7 +20,7 @@ class ImporterFunctions
 
         $data = json_decode(wp_remote_retrieve_body($response));
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             error_log('Invalid API response');
             return;
         }
@@ -27,13 +29,13 @@ class ImporterFunctions
         $admin_user_id = $this->getFirstAdministratorUserId();
 
         foreach ($data as $article) {
-            $post_title = $article->title;
-            $post_content = $article->content;
+            $post_title    = $article->title;
+            $post_content  = $article->content;
             $category_name = $article->category;
-            $image_url = $article->image;
+            $image_url     = $article->image;
 
             $site_link = $article->site_link ?? '';
-            $rating = $article->rating ?? '';
+            $rating    = $article->rating ?? '';
 
             $post_id = $this->findOrCreatePost($post_title, $post_content);
 
@@ -46,7 +48,7 @@ class ImporterFunctions
 
             // Update post details including date and author
             $post_data = [
-                'ID' => $post_id,
+                'ID'        => $post_id,
                 'post_date' => $random_date,
             ];
 
@@ -61,6 +63,9 @@ class ImporterFunctions
         }
     }
 
+    /**
+     * Make an API request with headers.
+     */
     private function makeApiRequest($url, $api_key): \WP_Error|array
     {
         $headers = [
@@ -70,6 +75,9 @@ class ImporterFunctions
         return wp_safe_remote_get($url, ['headers' => $headers]);
     }
 
+    /**
+     * Find or create a post based on title and content.
+     */
     private function findOrCreatePost($post_title, $post_content): \WP_Error|int
     {
         $existing_post = get_page_by_title($post_title, OBJECT, 'post');
@@ -79,23 +87,26 @@ class ImporterFunctions
             if ($post_content !== $existing_post->post_content) {
                 wp_update_post(
                     [
-                    'ID' => $post_id,
+                    'ID'           => $post_id,
                     'post_content' => $post_content,
                     ]
                 );
             }
         } else {
             $post_data = [
-                'post_title' => $post_title,
+                'post_title'   => $post_title,
                 'post_content' => $post_content,
-                'post_status' => 'publish',
+                'post_status'  => 'publish',
             ];
-            $post_id = wp_insert_post($post_data);
+            $post_id   = wp_insert_post($post_data);
         }
 
         return $post_id;
     }
 
+    /**
+     * Get or create a category.
+     */
     private function getOrCreateCategory($category_name)
     {
         $category = get_term_by('name', $category_name, 'category');
@@ -113,6 +124,9 @@ class ImporterFunctions
         }
     }
 
+    /**
+     * Upload and set a featured image for a post.
+     */
     private function uploadAndSetFeaturedImage($post_id, $image_url): void
     {
         $image_id = $this->uploadImageFromUrl($image_url);
@@ -122,17 +136,23 @@ class ImporterFunctions
         }
     }
 
+    /**
+     * Upload an image from a URL and return the attachment ID.
+     */
     private function uploadImageFromUrl($image_url)
     {
         $image_id = $this->getAttachmentIdByUrl($image_url);
 
-        if (!$image_id) {
+        if (! $image_id) {
             $image_id = media_sideload_image($image_url, 0, '', 'id');
         }
 
         return $image_id;
     }
 
+    /**
+     * Get the attachment ID based on the image URL.
+     */
     private function getAttachmentIdByUrl($image_url)
     {
         global $wpdb;
@@ -146,19 +166,28 @@ class ImporterFunctions
         return empty($attachment) ? 0 : $attachment[0];
     }
 
+    /**
+     * Generate a random date string within the last month.
+     */
     private function generateRandomDate(): string
     {
-        $current_time = current_time('timestamp');
-        $random_timestamp = mt_rand($current_time - 30 * 24 * 60 * 60, $current_time);
+        $current_time     = current_time('timestamp');
+        $random_timestamp = mt_rand(
+            $current_time - 30 * 24 * 60 * 60,
+            $current_time
+        );
 
         return date('Y-m-d H:i:s', $random_timestamp);
     }
 
+    /**
+     * Get the ID of the first user with the 'administrator' role.
+     */
     private function getFirstAdministratorUserId()
     {
         $admin_users = get_users(['role' => 'administrator']);
 
-        if (!empty($admin_users)) {
+        if (! empty($admin_users)) {
             return $admin_users[0]->ID;
         }
 

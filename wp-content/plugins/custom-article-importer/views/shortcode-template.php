@@ -1,10 +1,14 @@
 <?php
+
 /**
- * @var $title 
+ * @var $title
  */
 /**
- * @var $query 
+ * @var $query
  */
+
+use Spatie\Emoji\Emoji;
+
 ?>
 <div class="custom-article">
   <h2 class="custom-article__title"><?php echo esc_html($title); ?></h2>
@@ -32,7 +36,9 @@
                  rel="nofollow"
                  class="custom-article__read-more">Read More</a>
                 <?php if (! empty($article_rating)) : ?>
-                  <span class="custom-article__rating">⭐ <?php echo esc_html($article_rating); ?></span>
+                  <span class="custom-article__rating">
+                      <?php echo Emoji::star() . ' ' . esc_html($article_rating); ?>
+                  </span>
                 <?php endif; ?>
                 <?php if (! empty($article_site_link)) : ?>
                   <a href="<?php echo esc_url($article_site_link); ?>"

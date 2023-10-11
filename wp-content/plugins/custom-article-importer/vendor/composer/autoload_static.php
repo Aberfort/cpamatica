@@ -9,6 +9,7 @@ class ComposerStaticInite752eee858c9951a7e264ce4cc6bb3bf
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
+            'Spatie\\Emoji\\' => 13,
             'SlevomatCodingStandard\\' => 23,
         ),
         'P' => 
@@ -24,6 +25,10 @@ class ComposerStaticInite752eee858c9951a7e264ce4cc6bb3bf
     );
 
     public static $prefixDirsPsr4 = array (
+        'Spatie\\Emoji\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/spatie/emoji/src',
+        ),
         'SlevomatCodingStandard\\' => 
         array (
             0 => __DIR__ . '/..' . '/slevomat/coding-standard/SlevomatCodingStandard',

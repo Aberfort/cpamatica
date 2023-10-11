@@ -5,7 +5,7 @@
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'a2f77f0e82f5c4b7c274d0e08b74274f626deac3',
+        'reference' => 'b2f5a1f563a4870232a3683d68c6fc32c65c4271',
         'name' => 'cpamatica/custom-article-importer',
         'dev' => true,
     ),
@@ -25,7 +25,7 @@
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'a2f77f0e82f5c4b7c274d0e08b74274f626deac3',
+            'reference' => 'b2f5a1f563a4870232a3683d68c6fc32c65c4271',
             'dev_requirement' => false,
         ),
         'dealerdirect/phpcodesniffer-composer-installer' => array(
@@ -66,6 +66,15 @@
             'aliases' => array(),
             'reference' => 'fea1fd6f137cc84f9cba0ae30d549615dbc6a926',
             'dev_requirement' => true,
+        ),
+        'spatie/emoji' => array(
+            'pretty_version' => '4.0.0',
+            'version' => '4.0.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../spatie/emoji',
+            'aliases' => array(),
+            'reference' => 'aa9b01775ad3ff825914dab77f10fb8aa9aa297e',
+            'dev_requirement' => false,
         ),
         'squizlabs/php_codesniffer' => array(
             'pretty_version' => '3.7.2',
